@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>admin</title>
+    <link rel="shortcut icon" href="/public/images/fav.ico">
+    <link rel="stylesheet" href="/public/css/global.css">
+    <link rel="stylesheet" href="/public/css/login.css">
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/bootstrap-responsive.min.css">
+    <script src="/public/js/jquery.form.js"></script>
+</head>
+<body>
+<div class="login" id="login">
+    <img src="/public/images/logo.png" alt="">
+    <p>管理员你好, 欢迎回来! 请登录</p>
+    <div class="box">
+        <input type="text" placeholder="请输入用户名">
+        <input type="text" placeholder="请输入密码">
+        <a href="javascript:;">登录</a>
+    </div>
+</div>
+<div class="container">
+    <ul class="nav nav-pills" id="nav">
+        <li class="active">
+            <a href="javascript:;" id="alldata">所有求职人员信息</a>
+        </li>
+        <li><a href="javascript:;" id="sbtn">已发布信息管理</a></li>
+        <li><a href="javascript:;">发布信息</a></li>
+        <li><a href="#">退出登录</a></li>
+    </ul>
+</div>
+<!--所有求职人员信息-->
+<div class="login-end container show" id="all">
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <th>姓名</th>
+            <th>联系方式</th>
+            <th>WeChat</th>
+            <th>地址</th>
+            <th>身份证号</th>
+            <th>求职公司</th>
+            <th>申请时间</th>
+            <th>备注信息</th>
+            <th>修改备注</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="tb">
+        </tbody>
+    </table>
+</div>
+<!--已发布信息管理-->
+<div class="login-end container" id="reged">
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <th>公司名称</th>
+            <th>薪资待遇</th>
+            <th>发布日期</th>
+            <th>信息管理</th>
+        </tr>
+        </thead>
+        <tbody id="msgbox">
+
+        </tbody>
+    </table>
+</div>
+<!--发布招聘需求-->
+<div class="login-end container" id="bro">
+    <form class="form-search" action="http://localhost:8866/admin/article/upload" method="post"
+          enctype="multipart/form-data" id="form1">
+        <div class="control-group row-fluid">
+            <label class="control-label span1">公司名称</label>
+            <input class="input-xxlarge span11" name="name" type="text" id="name">
+        </div>
+        <div class="control-group row-fluid">
+            <label class="control-label span1">岗位</label>
+            <input class="input-xxlarge span11" type="text" id="post" name="job">
+        </div>
+        <div class="control-group row-fluid">
+            <label class="control-label span1">薪资</label>
+            <input class="input-xxlarge span11" type="text" id="salary" name="salary">
+        </div>
+        <div class="control-group row-fluid">
+            <label class="control-label span1">待遇</label>
+            <input class="input-xxlarge span11" type="text" id="scale" name="scale">
+        </div>
+        <div class="control-group row-fluid">
+            <label class="control-label span1">福利</label>
+            <input class="input-xxlarge span11" type="text" id="welfare" name="welfare">
+        </div>
+        <div class="control-group row-fluid">
+            <label class="control-label span1">要求</label>
+            <input class="input-xxlarge span11" type="text" id="conditions" name="conditions">
+        </div>
+        <div class="control-group row-fluid">
+            <label class="control-label span1">地址</label>
+            <input class="input-xxlarge span11" type="text" placeholder="请填写具体地址" id="address" name="address">
+        </div>
+        <div class="control-group row-fluid">
+            <label class="control-label  span1">公司介绍</label>
+            <textarea class="input-block-level span11" id="description" name="description"></textarea>
+        </div>
+        <div class="control-group row-fluid">
+            <div>
+                <label>上传图片</label>
+                <input type="file" name="picFile" id="picture"/>
+            </div>
+            <div id="previewImg">
+            </div>
+        </div>
+        <button class="btn btn-info btn-block" type="button" id="send">发布</button>
+    </form>
+</div>
+<script src="/public/js/jquery.js"></script>
+<script src="/public/js/jquery.form.js"></script>
+<script>
+    $(function () {
+        var aBtn = $('#nav li:lt(3)');
+        var aDiv = $('.login-end');
+        var oSend = $('#send');
+
+        function createobj(com, fl, xz, tms, id) {
+            var oTr = document.createElement('tr');
+            oTr.innerHTML = '<td>' + com + '</td><td>' + fl + ' / ' + xz + '</td><td>' + tms + '</td><td><a class="delart" href="javascript:;">删除</a></td>';
+            $(oTr).on("click", '.delart', function (){
+                $.ajax({
+                    url: '/api/admin/delarticle',
+                    data: {
+                        id: id
+                    },
+                    success: function () {
+                        alert('删除成功!');
+                        window.location.reload();
+                    }, error: function () {
+                        alert('删除失败!');
+                    }
+                })
+            });
+            return oTr;
+        }
+
+        //已发布信息管理:
+        $('#sbtn').on('click', function () {
+            $.ajax({
+                url: '/api/admin/getarticledata',
+                type: 'get',
+                success: function (res) {
+                    for (var i = 0; i < res.length; i++) {
+                        var oTr = createobj(res[i].companyname, res[i].fuli, res[i].xingzi, res[i].times, res[i]._id);
+                        $('#msgbox').append(oTr);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+        });
+
+
+        //信息切换
+        aBtn.on('click', function () {
+            $(this).addClass('active').siblings().removeClass('active');
+            aDiv.eq($(this).index()).addClass('show').siblings().removeClass('show');
+        });
+        //上传图片
+        $('#picture').on('change', function () {
+            var imgFiles = $(this)[0].files;
+            for (i = 0; i < imgFiles.length; i++) {
+                filePath = imgFiles[i].name;
+                fileFormat = filePath.split('.')[1].toLowerCase();
+                src = window.URL.createObjectURL(imgFiles[i]);
+                if (!fileFormat.match(/png|jpg|jpeg/)) {
+                    alert('上传错误,文件格式必须为：png/jpg/jpeg');
+                    return;
+                }
+                var preview = document.getElementById("previewImg");
+                var img = document.createElement('img');
+                img.width = 80;
+                img.height = 80;
+                img.src = src;
+                preview.appendChild(img);
+            }
+        });
+        //发布信息
+        oSend.on('click', function () {
+            $("#form1").ajaxSubmit({
+                type: 'post',
+                dataType: 'json',
+                cache: false, //上传文件不需要缓存
+                success: function (msg) {
+                    alert('成功!!!');
+                    $('.form-search input').each(function () {
+                        $(this).val('');
+                    });
+
+                    $('#description').val('');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+
+        function createTr(name, mob, vx, address, idcard, company, times, usernote, id) {
+            var oTr = document.createElement('tr');
+            oTr.innerHTML = '<td>' + name + '</td><td>' + mob + '</td><td>' + vx + '</td><td>' + address + '</td><td>' + idcard + '</td><td>' + company + '</td><td>' + times + '</td><td class="usernote">' + usernote + '</td><td><div class="input-append"><input class="modify" value="" placeholder="输入修改内容,50字以内" type="text"><a href="javascript:;" class="btn" type="button" >备注</a></div></td><td><a class="del" href="javascript:;">删除</a></td>';
+
+            $(oTr).on("click", '.del', function () {
+                var isTrue = confirm('确认要删除吗?');
+                if (isTrue) {
+                    $.ajax({
+                        url: '/admin/category/del',
+                        data: {
+                            id: id
+                        },
+                        success: function (res) {
+                            alert('删除成功');
+                            $('#tb').html('');
+                            getAllData();
+                        },
+                        error: function (err) {
+                            console.log('删除失败:' + err);
+                        }
+                    })
+                }
+            });
+
+            $(oTr).on("click", '.btn', function () {
+                var oInp = $(this).parent().find("input:first");
+                var box = $(this).parent().parent().parent().find('.usernote');
+                var val = oInp.val();
+                $.ajax({
+                    url: '/admin/category/edit',
+                    data: {
+                        id: id,
+                        val: val
+                    },
+                    success: function (res) {
+                        if (res.code === 200) {
+                            alert('修改成功!');
+                            oInp.val('');
+                            box.html(val);
+                        }
+                    },
+                    error: function (err) {
+                        console.log('修改失败:' + err);
+                    }
+                })
+            });
+            return oTr;
+        }
+
+        //所有求职人员信息
+        $('#alldata').on('click', getAllData);
+
+        function getAllData() {
+            $('#tb').html('');
+            $.ajax({
+                url: '/api/admin/getuserdata',
+                type: 'get',
+                success: function (suc) {
+                    for (var i = 0; i < suc.length; i++) {
+                        var oTr = createTr(suc[i].username, suc[i].mob, suc[i].vxnumber, suc[i].address, suc[i].idcard, suc[i].company, suc[i].times, suc[i].usernote, suc[i]._id);
+                        $('#tb').append(oTr);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+        }
+
+        getAllData();
+    })
+</script>
+</body>
+</html>

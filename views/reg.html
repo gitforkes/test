@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>申请注册</title>
+    <link rel="shortcut icon" href="/public/images/fav.ico">
+    <link rel="stylesheet" href="/public/css/global.css">
+    <link rel="stylesheet" href="/public/css/reg.css">
+</head>
+<body>
+<img src="/public/images/join.jpg" alt="" class="center img mb30">
+<h4 id="mask">请如实填写. 以免因信息错误造成酬劳延迟发放!</h4>
+<form id="msgbox" onsubmit="return false;">
+    <div>
+        <p><span>*</span><label for="username">姓名:</label></p>
+        <input type="text" name="username" id="username" placeholder="请输入用户名, 此项必填">
+    </div>
+    <div>
+        <p><span>*</span><label for="password">密码:</label></p>
+        <input type="text" name="password" id="password" placeholder="请输入6-16位密码, 此项必填">
+    </div>
+    <div>
+        <p><span>*</span><label for="mob">手机:</label></p>
+        <input type="text" name="mobile" id="mob" placeholder="请输入手机号,此项必填">
+    </div>
+    <div>
+        <p><span>*</span><label for="wechat">微信号:</label></p>
+        <input type="text" name="wechat" id="wechat" placeholder="请输入微信号">
+    </div>
+    <div>
+        <p><span>*</span><label for="idcard">身份证号码:</label></p>
+        <input type="text" name="idcard" id="idcard" placeholder="请输入身份证号码, 此项必填">
+    </div>
+    <div>
+        <p><span>*</span><label for="address">地址:</label></p>
+        <input type="text" name="address" id="address" placeholder="请输入地址, 如:南阳农校">
+    </div>
+    <input class="submit" type="submit" value="申请注册">
+</form>
+<script src="/public/js/jquery.js"></script>
+<script src="/public/js/jquery.validate.js"></script>
+<script src="/public/js/cookie.js"></script>
+<script>
+
+    function GetRequest() {
+        var url = window.location.search;
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    $('#msgbox').validate({
+        rules: {
+            "username": {
+                required: true
+            },
+            "password": {
+                required: true,
+                minlength: 6,
+                maxlength: 16
+            },
+            "mobile": {
+                required: true,
+                digits: true,
+                minlength: 11,
+                maxlength: 11
+            },
+            "wechat": {
+                required: true
+            },
+            "idcard": {
+                required: true,
+                rangelength: [16, 18]
+            },
+            "address": {
+                required: true
+            }
+        },
+        messages: {
+            "username": {
+                required: "此项必填"
+            },
+            "password": {
+                required: "此项必填",
+                minlength: '密码最少6位',
+                maxlength: '密码最多16位'
+            },
+            "mobile": {
+                required: "此项必填",
+                digits: "手机号码只能是数字",
+                minlength: '手机号只能是11位数字',
+                maxlength: '手机号只能是11位数字'
+            },
+            "wechat": {
+                required: "此项必填"
+            },
+            "idcard": {
+                required: "此项必填",
+                rangelength: "身份证号码格式错误"
+            },
+            "address": {
+                required: "此项必填"
+            }
+        },
+        submitHandler: function (form) {
+            var oDate = new Date();
+            var oYear = oDate.getFullYear();
+            var oMon = oDate.getMonth() + 1;
+            var oDay = oDate.getDate();
+            var times = oYear + '/' + oMon + '/' + oDay;
+            var meg=decodeURI(decodeURI($.cookie("name")));
+            console.log(meg);
+            $.ajax({
+                url : "/api/user/register",
+                type:'post',
+                data: {
+                    name: $("#username").val(),
+                    vxnumber: $("#wechat").val(),
+                    phoneNumber:$('#mob').val(),
+                    idcard: $('#idcard').val(),
+                    password: $('#password').val(),
+                    times: times,
+                    company: meg,
+                    usernote: '默认',
+                    address: $('#address').val()
+                },
+                success : function(res) {
+                    $('#msgbox').hide();
+                    $('#mask').css('color', '#c00').html('注册成功! 即将跳转至招聘页面, 请稍后...');
+                    setTimeout(function(){
+                        window.location.href = 'http://localhost:8866/';
+                    },2000);
+                },
+                error: function (err) {
+                    console.log('error: ' , err);
+                }
+            });
+            // return false;
+        }
+    });
+</script>
+</body>
+</html>

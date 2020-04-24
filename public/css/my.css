@@ -1,0 +1,106 @@
+body {
+    background: #fff;
+}
+
+.box {
+    width: 98%;
+    padding: 10px 1%;
+    background: #fff;
+}
+
+.box li {
+    width: 96%;
+    height: 50px;
+    padding: 0 2%;
+    margin-bottom: 10px;
+}
+
+.box li img {
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin: 10px 0;
+    float: left;
+}
+
+.box li p {
+    width: calc(96% - 40px);
+    height: 30px;
+    overflow: hidden;
+    padding: 10px 0 4px 6px;
+    float: left;
+    border-bottom: #e3e3e3 1px solid;
+}
+
+.box li p strong {
+    display: block;
+    height: 14px;
+    line-height: 14px;
+    font-weight: 500;
+}
+
+.box li p span {
+    display: block;
+    color: #333;
+    height: 18px;
+    line-height: 18px;
+}
+
+.mask {
+    width: 96%;
+    height: 100%;
+    padding: 12px 2%;
+    position: absolute;
+    top: 0;
+    bottom: 52px;
+    left: 0;
+    z-index: 9;
+    color: #333;
+    display: none;
+}
+
+.mask h4 {
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.mask h4 strong {
+    color: #c00;
+    font-size: 16px;
+}
+
+.mask ol {
+    padding: 10px 0;
+}
+
+.mask ol li {
+    height: auto;
+    overflow: hidden;
+    padding: 10px 0;
+    border-bottom: #e1e1e1 1px solid;
+}
+
+.mask ol li div {
+    height: auto;
+    line-height: 16px;
+}
+
+.mask ol li p {
+    height: 24px;
+    line-height: 24px;
+}
+
+.mask ol li p strong,
+.mask ol li p span {
+    display: block;
+}
+
+.mask ol li p strong {
+    float: left;
+}
+
+.mask ol li p span {
+    float: right;
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>招聘信息</title>
+    <link rel="shortcut icon" href="/public/images/fav.ico">
+    <link rel="stylesheet" href="/public/css/global.css">
+    <link rel="stylesheet" href="/public/css/msg.css">
+</head>
+<body>
+<p class="search">
+    <input type="text" placeholder="输入地区查看对应的招聘信息, 如江苏" id="ser">
+    <a href="javascript:;" id="search">搜索</a>
+</p>
+
+<div class="list"><ul id="listBox"></ul></div>
+<script src="/public/js/jquery.js"></script>
+<script>
+    $(function () {
+        var oBox = $('#listBox');
+        var oSearch = $('#search');
+        var oInput = $('#ser');
+
+        function createLi(n, p, s, w, id, i) {
+            var oLi = document.createElement('li');
+            oLi.innerHTML = ' <a href="/article?id='+id+'"><img src="'+i+'" alt=""><div><h4>' + n + '</h4><p><em>' + p + '</em><em>' + s + '</em></p><p><span>' + w + '</span></p></div></a>';
+            oBox.append(oLi);
+        }
+        //获取默认数据
+        function getData() {
+            $.ajax({
+                url: '/api/admin/getarticledata',
+                type: 'get',
+                success: function (res) {
+                    oBox.html('').css("padding-top", '0');
+                    // var arr = res.list;
+                    for (var i = 0; i < res.length; i++) {
+                        createLi(res[i].companyname, res[i].job, res[i].xingzi, res[i].fuli, res[i]._id, res[i].imgUrl);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+        }
+        getData();
+
+        //搜索
+        oSearch.on('click', function () {
+            if (oInput.val() !== '') {
+                $.ajax({
+                    url: '/admin/search',
+                    type: 'get',
+                    data: {
+                        condition: oInput.val()
+                    },
+                    success: function (res) {
+                        oBox.html('');
+                        if(res.length !== 0){
+                            for (var i = 0; i < res.length; i++) {
+                                createLi(res[i].companyname, res[i].job, res[i].xingzi, res[i].fuli, res[i]._id, res[i].imgUrl);
+                            }
+                        } else {
+                            oBox.html('<p style="text-align: center; padding-top: 50px;">该区域下暂无招聘企业！即将跳转至默认招聘信息...</p>');
+                            setTimeout(getData, 1000);
+                        }
+                    },
+                    error: function (err) {
+                        console.log('error', err);
+                    }
+                })
+            } else {
+                getData();
+            }
+        });
+    });
+</script>
+</body>
+</html>
